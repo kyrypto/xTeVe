@@ -17,6 +17,18 @@ type Channel struct {
 	ID           string        `xml:"id,attr"`
 	DisplayNames []DisplayName `xml:"display-name"`
 	Icon         Icon          `xml:"icon"`
+        StreamURL []string `json:"streamURL"` // support multiple sources
+}
+
+// check each source until one is successful
+func (c *Channel) GetStream() (*Stream, error) {
+    for _, url := range c.StreamURL {
+        s, err := NewStream(url)
+        if err == nil {
+            return s, nil
+        }
+    }
+    return nil, fmt.Errorf("failed to get stream for channel %s", c.Name)
 }
 
 // DisplayName : Channel Name
